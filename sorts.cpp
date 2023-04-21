@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <cstdlib>
 #include <math.h>
+#include <algorithm>
 
 // compile with -fconcepts and you
 // can make the std::vector<int>
@@ -27,9 +28,9 @@ int index_of(int item, int data[], int len){
 }
 
 
-  int find_min_index(std::vector<int> a,
-		   int start_index,
-		   int stop_index){
+int find_min_index(std::vector<int> a,
+		 int start_index,
+		 int stop_index){
   int min_index = start_index;
   int i;
   for (i = start_index; i < stop_index; i++){
@@ -158,6 +159,40 @@ std::vector<int> qsort(std::vector<int> list){
   return list;
 }
 
+void qsort2(std::vector<int> &v, int low, int high){
+	if (low >= high){
+		return;
+	}
+	int mid = (high-low+1)/2;
+	int a = v[low];
+	int b = v[mid];
+	int c = v[high];
+	int pivot = 0;
+	if (((b>=a) && (a>=c)) || ((c>=a) && (a>=b))){ // low
+		pivot = low;
+	}
+	if (((a>=b) && (b>=c)) || ((c>=b) && (b>=a))){ // mid
+		pivot = mid;
+	}
+	if (((a>=c) && (c>=b)) || ((b>=c) && (c>=a))){ // high
+		pivot = high;
+	}
+	int pivot_val = v[pivot];
+	std::swap(v[pivot], v[high]-1);
+	
+	int i = low-1;
+	for (int count = low; count < high-1; count++) {
+    if (v[count] < pivot) {
+      i++;
+      std::swap(v[i], v[count]);
+    }
+  }
+  std::swap(v[i+1], v[high-1]);
+
+  qsort2(v, low, i+1);
+  qsort2(v, i+2, high);
+  return;
+}
 
 void print_help(char *command_name){
   std::cout << command_name << " usage: ";
@@ -166,16 +201,12 @@ void print_help(char *command_name){
   std::cout << "  -p : print\n";
   std::cout << "  -s SIZE : array size\n";
   std::cout << "  -m MAX_VAL : maximum element value\n";
-  std::cout << "  -a [s|m|q] : selection, merge, or quick sort\n";
-  
+  std::cout << "  -a [s|m|q|n|d] : selection, merge, quick sort, new quick sort, or default/built in sort\n";
 }
 
 extern char *optarg;
 
-int main(int argc, char *argv[])
-{
-
-
+int main(int argc, char *argv[]) {
   int size = 20;
   int max_val = 100;
   char algorithm = 's' ; // selection sort
@@ -201,8 +232,8 @@ int main(int argc, char *argv[])
       algorithm = optarg[0];
     }
   }
-  
-  
+
+
   srand(time(nullptr));
   std::vector<int> a(size);
   for (int i = 0; i < size; i++){
@@ -215,25 +246,30 @@ int main(int argc, char *argv[])
   }
 
   std::vector<int> b;
-  
+
   std::cout << "Starting the sort.\n";
   struct timeval tp;
   gettimeofday(&tp, NULL);
   long start_time = tp.tv_sec * 1000 + tp.tv_usec / 1000;
-  
+
   if (algorithm=='s'){
     b = ssort(a);
   } else if (algorithm=='m'){
     b = msort(a);
   } else if (algorithm=='q'){
     b = qsort(a);
+  } else if (algorithm=='n'){
+    b = a;
+    qsort2(b, 0, a.size());
+  } else if (algorithm=='d'){
+    b = a;
+    std::sort(b.begin(), b.end());
   }
-  
 
   gettimeofday(&tp,NULL);
   long current_time = tp.tv_sec * 1000 + tp.tv_usec / 1000;
   long elapsed = current_time - start_time;
-  
+
   if (print){
     print_vector(b);
   }
