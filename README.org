@@ -39,4 +39,7 @@ can create a new Makefile or copy and modify one you've used in the past.
 
 
 * Write your comments here:   
-   
+After doing multiple tests on each sorting methods, I found that quick sort 
+2 took the longest while the default C++ sort was the quickest. Merge sort 
+was slightly faster than quick sort 2, and quick sort (first one) ended up 
+being faster than merge sort.   
