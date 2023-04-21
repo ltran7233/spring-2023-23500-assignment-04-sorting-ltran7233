@@ -178,7 +178,7 @@ void qsort2(std::vector<int> &v, int low, int high){
 		pivot = high;
 	}
 	int pivot_val = v[pivot];
-	std::swap(v[pivot], v[high]-1);
+	std::swap(v[pivot], v[high]);
 	
 	int i = low-1;
 	for (int count = low; count < high-1; count++) {
